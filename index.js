@@ -18,7 +18,6 @@ exports.handler = function(event, context, callback) {
     alexa.execute();
 };
 
-
 /**
  * generate random number
  */
@@ -26,7 +25,8 @@ const getRandomNumber = (min, max) => {
     return Math.floor(Math.random() * max) + min;
 }
 
-/** get a random book by genre */
+/** 
+ * get a random book by genre
 const getByGenre = genreName => {
 
     let books = BOOKS.filter(book => {
@@ -81,7 +81,6 @@ var handlers = {
             speechOutput = `How about ${specificGenre.title}?`;
         }
         else {
-            speechOutput = 'Exact category match not found';
         }
 
         this.emit(':tellWithCard', speechOutput, SKILL_NAME, 'secret')
