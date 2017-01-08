@@ -27,6 +27,7 @@ const getRandomNumber = (min, max) => {
 
 /** 
  * get a random book by genre
+ */
 const getByGenre = genreName => {
 
     let books = BOOKS.filter(book => {
@@ -78,9 +79,10 @@ var handlers = {
         let specificGenre = getByGenre(genre);
 
         if(specificGenre !== null){
-            speechOutput = `How about ${specificGenre.title}?`;
+            speechOutput = `How about ${specificGenre.title}, by ${specificGenre.author}?`;
         }
         else {
+            speechOutput = `Sorry, I couldn't find a ${genre} book`;
         }
 
         this.emit(':tellWithCard', speechOutput, SKILL_NAME, 'secret')
