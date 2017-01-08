@@ -35,7 +35,7 @@ const getByGenre = genreName => {
             return (book.genreId === g.id) ? true: false;   
         });
 
-        return (genreName === genre[0].name) ? true: false;
+        return (genreName.toLowerCase() === genre[0].name.toLowerCase()) ? true: false;
 
     });
 
@@ -62,20 +62,27 @@ var handlers = {
         let randomBook = BOOKS[randomIndex-1];
 
         // Create speech output
-        var speechOutput = "Here's your book: " + randomBook.name + " by " + randomBook.author;
+        var speechOutput = "Here's your book: " + randomBook.title + " by " + randomBook.author;
 
         this.emit(':tellWithCard', speechOutput, SKILL_NAME, randomBook.name)
     },
     'GetBookByGenreIntent': function () {
         
         let genre = this.event.request.intent.slots.genre.value;
-        
         this.emit('GetBookByGenre', genre);
+
     },
     'GetBookByGenre': function (genre) {
         
-        // Create speech output
-        var speechOutput = "You asked for a specific genre: " + genre;
+        let speechOutput = '';
+        let specificGenre = getByGenre(genre);
+
+        if(specificGenre !== null){
+            speechOutput = `How about ${specificGenre.title}?`;
+        }
+        else {
+            speechOutput = 'Exact category match not found';
+        }
 
         this.emit(':tellWithCard', speechOutput, SKILL_NAME, 'secret')
     },

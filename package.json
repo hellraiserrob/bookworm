@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/hellraiserrob/bookworm/issues"
   },
-  "homepage": "https://github.com/hellraiserrob/bookworm#readme"
+  "homepage": "https://github.com/hellraiserrob/bookworm#readme",
+  "dependencies": {
+    "alexa-sdk": "^1.0.6"
+  }
 }
