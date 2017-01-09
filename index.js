@@ -1,6 +1,7 @@
 /**
  * TODO
- * Populate from dynamic data source
+ * 1 - Populate from dynamic data source
+ * 2 - Provide access to NYT bestsellers list via NYT API
  */
 
 'use strict';
@@ -8,7 +9,8 @@
 const Alexa = require('alexa-sdk');
 const BOOKS = require('./books.js').books;
 const GENRES = require('./books.js').genres;
-const APP_ID = undefined; //OPTIONAL: replace with "amzn1.echo-sdk-ams.app.[your-unique-value-here]";
+
+const APP_ID = "amzn1.echo-sdk-ams.app.394399230561";
 const SKILL_NAME = 'Bookworm';
 
 exports.handler = function(event, context, callback) {
@@ -50,6 +52,24 @@ const getByGenre = genreName => {
 }
 
 
+/**
+ * get a specific book by title
+ */
+const getByTitle = (title) => {
+    
+    let books = BOOKS.filter((book)=>{
+        return (book.title.toLowerCase() === title.toLowerCase()) ? true : false;
+
+    });
+    if(books.length === 1){
+        return books[0];
+    }
+
+    return null;
+}
+
+
+
 var handlers = {
     'LaunchRequest': function () {
         this.emit('GetBook');
@@ -65,7 +85,7 @@ var handlers = {
         // Create speech output
         var speechOutput = "Here's your book: " + randomBook.title + " by " + randomBook.author;
 
-        this.emit(':tellWithCard', speechOutput, SKILL_NAME, randomBook.name)
+        this.emit(':tellWithCard', speechOutput, SKILL_NAME + ' - Random Book', speechOutput)
     },
     'GetBookByGenreIntent': function () {
         
@@ -85,10 +105,33 @@ var handlers = {
             speechOutput = `Sorry, I couldn't find a ${genre} book`;
         }
 
-        this.emit(':tellWithCard', speechOutput, SKILL_NAME, 'secret')
+        this.emit(':tellWithCard', speechOutput, SKILL_NAME + ' -' + genre + ' Book' , speechOutput)
     },
+
+    'GetBookSynopsisIntent': function () {
+        
+        let title = this.event.request.intent.slots.title.value;
+        this.emit('GetBookSynopsis', title);
+
+    },
+    'GetBookSynopsis': function (title) {
+        
+        let speechOutput = '';
+        let specificTitle = getByTitle(title);
+
+        if(specificTitle !== null){
+            speechOutput = `${specificTitle.synopsis}`;
+        }
+        else {
+            speechOutput = `Sorry, I couldn't find ${title}`;
+        }
+
+        this.emit(':tellWithCard', speechOutput, SKILL_NAME, speechOutput)
+    },
+
+
     'AMAZON.HelpIntent': function () {
-        var speechOutput = "You can say tell me a book";
+        var speechOutput = "You can say alexa ask bookworm for a book";
         var reprompt = "What can I help you with?";
         this.emit(':ask', speechOutput, reprompt);
     },
