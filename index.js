@@ -10,8 +10,11 @@ const Alexa = require('alexa-sdk');
 const BOOKS = require('./books.js').books;
 const GENRES = require('./books.js').genres;
 
+const getByGenre = require('./src/getByGenre.js');
+const getRandomNumber = require('./src/utils.js').getRandomNumber;
+
 const APP_ID = "amzn1.echo-sdk-ams.app.394399230561";
-const SKILL_NAME = 'Bookworm';
+const SKILL_NAME = 'My Bookworm';
 
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
@@ -19,37 +22,6 @@ exports.handler = function(event, context, callback) {
     alexa.registerHandlers(handlers);
     alexa.execute();
 };
-
-/**
- * generate random number
- */
-const getRandomNumber = (min, max) => {
-    return Math.floor(Math.random() * max) + min;
-}
-
-/** 
- * get a random book by genre
- */
-const getByGenre = genreName => {
-
-    let books = BOOKS.filter(book => {
-        
-        let genre = GENRES.filter((g) => {
-            return (book.genreId === g.id) ? true: false;   
-        });
-
-        return (genreName.toLowerCase() === genre[0].name.toLowerCase()) ? true: false;
-
-    });
-
-    if(books.length){
-        let randomIndex = getRandomNumber(1, books.length);
-        return books[randomIndex-1];
-    }
-
-    return null;
-
-}
 
 
 /**
@@ -85,7 +57,7 @@ var handlers = {
         // Create speech output
         var speechOutput = "Here's your book: " + randomBook.title + " by " + randomBook.author;
 
-        this.emit(':tellWithCard', speechOutput, SKILL_NAME + ' - Random Book', speechOutput)
+        this.emit(':tellWithCard', speechOutput, SKILL_NAME + ', random book', speechOutput)
     },
     'GetBookByGenreIntent': function () {
         
@@ -96,7 +68,7 @@ var handlers = {
     'GetBookByGenre': function (genre) {
         
         let speechOutput = '';
-        let specificGenre = getByGenre(genre);
+        let specificGenre = getByGenre(BOOKS, GENRES, genre);
 
         if(specificGenre !== null){
             speechOutput = `How about ${specificGenre.title}, by ${specificGenre.author}?`;
@@ -105,7 +77,7 @@ var handlers = {
             speechOutput = `Sorry, I couldn't find a ${genre} book`;
         }
 
-        this.emit(':tellWithCard', speechOutput, SKILL_NAME + ' -' + genre + ' Book' , speechOutput)
+        this.emit(':tellWithCard', speechOutput, SKILL_NAME + ', ' + genre + ' book' , speechOutput)
     },
 
     'GetBookSynopsisIntent': function () {
@@ -126,7 +98,7 @@ var handlers = {
             speechOutput = `Sorry, I couldn't find ${title}`;
         }
 
-        this.emit(':tellWithCard', speechOutput, SKILL_NAME, speechOutput)
+        this.emit(':tellWithCard', speechOutput, SKILL_NAME + ', ' + title + ' synopsis', speechOutput)
     },
 
 
@@ -184,10 +156,6 @@ var handlers = {
 // else {
 //     console.log('Exact category match not found');
 // }
-
-
-
-
 
 
 
