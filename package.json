@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/hellraiserrob/bookworm#readme",
   "dependencies": {
-    "alexa-sdk": "^1.0.6"
+    "alexa-sdk": "^1.0.6",
+    "request-promise": "^4.1.1"
   }
 }

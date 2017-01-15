@@ -10,8 +10,11 @@ const Alexa = require('alexa-sdk');
 const BOOKS = require('./books.js').books;
 const GENRES = require('./books.js').genres;
 
-const getByGenre = require('./src/getByGenre.js');
 const getRandomNumber = require('./src/utils.js').getRandomNumber;
+
+const getByGenre = require('./src/getByGenre.js');
+const getBestsellers = require('./src/bestsellers.js').getBestsellers;
+const getBestsellerWords = require('./src/bestsellers.js').getBestsellerWords;
 
 const APP_ID = "amzn1.echo-sdk-ams.app.394399230561";
 const SKILL_NAME = 'My Bookworm';
@@ -22,6 +25,28 @@ exports.handler = function(event, context, callback) {
     alexa.registerHandlers(handlers);
     alexa.execute();
 };
+
+
+// getBestsellers('lists/names.json').then((resp) => {
+//     let body = JSON.parse(resp);
+//     console.log(body);
+// });
+
+getBestsellers('lists.json', {
+    list: 'combined-print-and-e-book-nonfiction'
+}).then((resp) => {
+    
+    let jsonReponse = JSON.parse(resp)
+    let output = getBestsellerWords(jsonReponse.results, 500)
+
+    console.log(output)
+
+})
+
+
+// let bestsellers = getBestsellers();
+// console.log(bestsellers);
+
 
 
 /**
@@ -163,3 +188,4 @@ var handlers = {
 
 
 
+handlers.GetBook();
